@@ -8,18 +8,18 @@ RETRIEVED_DATA_PLACEHOLDER = """
 )
 
 
-def get_response(query: str, history: list) -> str:
-    response = f"""
-    <b>Previous history:</b>
-    {str(history)}
+# def get_response(query: str, history: list) -> str:
+#     response = f"""
+#     <b>Previous history:</b>
+#     {str(history)}
 
-    <b>Assistant:</b>
+#     <b>Assistant:</b>
 
-    I don't know the answer to your question:
-    {query}
-    """
+#     I don't know the answer to your question:
+#     {query}
+#     """
 
-    return response
+#     return response
 
 
 def upload_files(files: str | None = None):
@@ -30,54 +30,67 @@ def create_demo_ui():
     with gr.Blocks(
         title="AI assistant for pre-silicon verification", theme="Soft"
     ) as demo:
-        chatbot = gr.Chatbot(
-            render=False,
-            height=800,
-            # bubble_full_width=False,
-            label="IFRO Chatbot",
-            show_copy_button=True,
-            layout="bubble",
-        )
-
-        textbox = gr.Textbox(
-            lines=1,
-            render=False,
-            placeholder="Type question here...",
-            show_label=False,
-            scale=5,
-        )
-
-        clear_button = gr.ClearButton(render=False)
-
         with gr.Row():
             with gr.Column(scale=2):
-                chat_interface = gr.ChatInterface(
-                    fn=get_response,
-                    theme=gr.themes.Soft(),
-                    title="AI assistant for pre-silicon verification",
-                    description="<h3>Upload your PDFs and ask questions</h3>",
-                    textbox=textbox,
-                    chatbot=chatbot,
-                    clear_btn=clear_button,
+                gr.Markdown("# AI assistant for pre-silicon verification")
+                gr.Markdown("### Ask your questions based on the PDFs provided")
+
+                chatbot = gr.Chatbot(
+                    height=780,
+                    bubble_full_width=False,
+                    label="IFRO Chatbot",
+                    show_copy_button=True,
+                    layout="bubble",
+                    avatar_images=(
+                        "/mnt/Storage1/grozavu/digital-circuit-chatbot/database/pokemon_avatar.jpg",
+                        "/mnt/Storage1/grozavu/digital-circuit-chatbot/database/pokemon_avatar.jpg",
+                    ),
                 )
+
+                with gr.Row():
+                    stop_btn = gr.Button(
+                        "Stop",
+                        variant="stop",
+                        visible=True,
+                        scale=1,
+                        min_width=150,
+                    )
+                    clear_button = gr.ClearButton(
+                        value="🗑️ Clear", scale=1, min_width=150
+                    )
+
+                with gr.Row():
+                    text_input = gr.Textbox(
+                        lines=1,
+                        placeholder="Type question here...",
+                        show_label=False,
+                        scale=5,
+                    )
+
+                    submit_btn = gr.Button(
+                        "Submit",
+                        variant="primary",
+                        scale=1,
+                        min_width=150,
+                    )
 
             with gr.Column():
                 retrieved_docs = gr.TextArea(
                     label="Retrieved data",
                     interactive=False,
-                    value=RETRIEVED_DATA_PLACEHOLDER,
+                    value="No data retrieved",
                     max_lines=41,
                 )
 
-                files = gr.UploadButton(
+                uploaded_files = gr.UploadButton(
                     file_count="multiple",
                     file_types=[".pdf"],
                     label="Upload 📁",
                 )
 
-            files.upload(fn=upload_files, inputs=files)
-            clear_button.add([chat_interface, retrieved_docs])
-    return demo
+            uploaded_files.upload(fn=upload_files, inputs=uploaded_files)
+            clear_button.add([chatbot, text_input, uploaded_files, retrieved_docs])
+    return (demo, chatbot, text_input, uploaded_files, retrieved_docs, submit_btn)
 
 
 if __name__ == "__main__":
