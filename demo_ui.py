@@ -9,7 +9,8 @@ def upload_files(files: str | None = None):
 
 def create_demo_ui():
     with gr.Blocks(
-        title="BUC SP AI assistant for pre-silicon verification", theme="Soft"
+        title="AI assistant for IC design",
+        theme=gr.themes.Soft(),
     ) as demo:
         with gr.Row():
             with gr.Column(scale=2):
@@ -25,7 +26,7 @@ def create_demo_ui():
                 # )
 
                 # with gr.Column(scale=4):
-                gr.Markdown("# BUC SP AI assistant for pre-silicon verification")
+                gr.Markdown("# AI assistant for IC design")
                 gr.Markdown("### Ask your questions based on the provided knowledge")
 
                 chatbot = gr.Chatbot(
